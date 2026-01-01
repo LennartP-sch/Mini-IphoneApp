@@ -445,15 +445,12 @@ body {
     background: var(--border-color);
 }
 
-/* Footer */
-.footer {
+/* Actions Section (Export/Import) */
+.actions-section {
     display: flex;
     gap: 12px;
-    padding: 12px 16px;
-    padding-bottom: calc(12px + var(--safe-area-bottom));
-    background: var(--bg-primary);
-    border-top: 1px solid var(--border-color);
-    flex-shrink: 0;
+    padding: 16px 0;
+    margin-bottom: 20px;
 }
 
 .action-btn {

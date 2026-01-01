@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
@@ -8,23 +9,24 @@
     <meta name="apple-mobile-web-app-title" content="Mood">
     <meta name="theme-color" content="#0D0D0D">
     <meta name="description" content="Personal mood tracker - Track your daily mood throughout the year">
-    
+
     <title>Mood Tracker</title>
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-    
+
     <!-- iOS Icons -->
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
-    
+
     <!-- Preload fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="app">
         <!-- Header -->
@@ -47,7 +49,7 @@
             <div class="grid-container">
                 <!-- Month Headers -->
                 <div class="month-headers" id="monthHeaders"></div>
-                
+
                 <!-- Grid -->
                 <div class="mood-grid" id="moodGrid"></div>
             </div>
@@ -63,6 +65,27 @@
                 <h2 class="legend-title">Legend</h2>
                 <div class="legend-grid" id="legendGrid"></div>
             </section>
+
+            <!-- Export/Import Actions -->
+            <section class="actions-section">
+                <button class="action-btn" id="exportBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export
+                </button>
+                <button class="action-btn" id="importBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Import
+                </button>
+                <input type="file" id="importFile" accept=".json" hidden>
+            </section>
         </main>
 
         <!-- Mood Selector Modal -->
@@ -71,7 +94,8 @@
                 <div class="modal-header">
                     <h3 class="modal-title" id="modalTitle">Select Mood</h3>
                     <button class="modal-close" id="modalClose" aria-label="Close">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
@@ -81,29 +105,9 @@
                 <button class="clear-btn" id="clearMood">Clear</button>
             </div>
         </div>
-
-        <!-- Export/Import Menu -->
-        <footer class="footer">
-            <button class="action-btn" id="exportBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Export
-            </button>
-            <button class="action-btn" id="importBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-                Import
-            </button>
-            <input type="file" id="importFile" accept=".json" hidden>
-        </footer>
     </div>
 
     <script src="app.js"></script>
 </body>
+
 </html>
