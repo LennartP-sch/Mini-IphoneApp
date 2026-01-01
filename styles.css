@@ -198,6 +198,33 @@ body {
     text-align: center;
 }
 
+.today-note,
+.modal-note {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 14px;
+    line-height: 1.4;
+    resize: none;
+    transition: border-color 0.2s ease;
+}
+
+.today-note:focus,
+.modal-note:focus {
+    outline: none;
+    border-color: var(--text-secondary);
+}
+
+.today-note::placeholder,
+.modal-note::placeholder {
+    color: var(--text-tertiary);
+}
+
 .grid-container {
     background: var(--bg-secondary);
     border-radius: 16px;

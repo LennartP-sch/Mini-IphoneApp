@@ -14,11 +14,13 @@ const MOODS = {
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const STORAGE_KEY = 'moodTrackerData';
+const NOTES_STORAGE_KEY = 'moodTrackerNotes';
 
 class MoodTracker {
     constructor() {
         this.currentYear = new Date().getFullYear();
         this.data = this.loadData();
+        this.notes = this.loadNotes();
         this.selectedCell = null;
 
         this.init();
@@ -52,6 +54,8 @@ class MoodTracker {
             modalClose: document.getElementById('modalClose'),
             moodOptions: document.getElementById('moodOptions'),
             clearMood: document.getElementById('clearMood'),
+            modalNote: document.getElementById('modalNote'),
+            todayNote: document.getElementById('todayNote'),
             exportBtn: document.getElementById('exportBtn'),
             importBtn: document.getElementById('importBtn'),
             importFile: document.getElementById('importFile')
@@ -79,6 +83,12 @@ class MoodTracker {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') this.closeModal();
         });
+
+        // Today note auto-save
+        this.elements.todayNote.addEventListener('input', () => this.saveTodayNote());
+
+        // Modal note auto-save
+        this.elements.modalNote.addEventListener('input', () => this.saveModalNote());
     }
 
     loadData() {
@@ -97,6 +107,50 @@ class MoodTracker {
         } catch (e) {
             console.error('Error saving data:', e);
         }
+    }
+
+    loadNotes() {
+        try {
+            const saved = localStorage.getItem(NOTES_STORAGE_KEY);
+            return saved ? JSON.parse(saved) : {};
+        } catch (e) {
+            console.error('Error loading notes:', e);
+            return {};
+        }
+    }
+
+    saveNotes() {
+        try {
+            localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(this.notes));
+        } catch (e) {
+            console.error('Error saving notes:', e);
+        }
+    }
+
+    saveTodayNote() {
+        const today = new Date();
+        const key = this.getKey(today.getFullYear(), today.getMonth(), today.getDate());
+        const note = this.elements.todayNote.value.trim();
+
+        if (note) {
+            this.notes[key] = note;
+        } else {
+            delete this.notes[key];
+        }
+        this.saveNotes();
+    }
+
+    saveModalNote() {
+        if (!this.selectedCell) return;
+        const key = this.selectedCell.dataset.key;
+        const note = this.elements.modalNote.value.trim();
+
+        if (note) {
+            this.notes[key] = note;
+        } else {
+            delete this.notes[key];
+        }
+        this.saveNotes();
     }
 
     getKey(year, month, day) {
@@ -156,6 +210,10 @@ class MoodTracker {
         this.elements.todayMoods.querySelectorAll('.today-mood-btn').forEach(btn => {
             btn.addEventListener('click', () => this.setTodayMood(btn));
         });
+
+        // Load today's note
+        const todayNote = this.notes[todayKey] || '';
+        this.elements.todayNote.value = todayNote;
     }
 
     setTodayMood(btn) {
@@ -288,8 +346,13 @@ class MoodTracker {
         this.selectedCell = cell;
         const month = MONTHS[parseInt(cell.dataset.month)];
         const day = cell.dataset.day;
+        const key = cell.dataset.key;
 
         this.elements.modalTitle.textContent = `${month} ${day}, ${this.currentYear}`;
+
+        // Load note for this day
+        this.elements.modalNote.value = this.notes[key] || '';
+
         this.elements.moodModal.classList.add('active');
     }
 
@@ -317,7 +380,11 @@ class MoodTracker {
     }
 
     exportData() {
-        const dataStr = JSON.stringify(this.data, null, 2);
+        const exportObj = {
+            moods: this.data,
+            notes: this.notes
+        };
+        const dataStr = JSON.stringify(exportObj, null, 2);
         const blob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
 
@@ -338,8 +405,21 @@ class MoodTracker {
         reader.onload = (e) => {
             try {
                 const imported = JSON.parse(e.target.result);
-                this.data = { ...this.data, ...imported };
+
+                // Handle both old format (just moods) and new format (moods + notes)
+                if (imported.moods) {
+                    this.data = { ...this.data, ...imported.moods };
+                    if (imported.notes) {
+                        this.notes = { ...this.notes, ...imported.notes };
+                    }
+                } else {
+                    // Old format - just mood data
+                    this.data = { ...this.data, ...imported };
+                }
+
                 this.saveData();
+                this.saveNotes();
+                this.renderToday();
                 this.renderGrid();
                 this.updateStats();
                 alert('Data imported successfully!');
