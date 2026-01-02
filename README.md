@@ -1,6 +1,6 @@
 # 📊 Mood Tracker PWA
 
-A beautiful, minimal mood tracking app inspired by [K Manuel's viral mood tracker](https://x.com/theklmanuel). Track your daily mood throughout the year with a clean, Trade Republic-inspired design.
+A beautiful, minimal mood tracking app inspired by [K Manuel's viral mood tracker](https://x.com/theklmanuel). Track your daily mood throughout the year with a clean design.
 
 ![Mood Tracker Preview](https://img.shields.io/badge/PWA-Ready-brightgreen) ![License](https://img.shields.io/badge/license-MIT-blue)
 
