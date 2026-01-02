@@ -19,14 +19,14 @@ A beautiful, minimal mood tracking app inspired by [K Manuel's viral mood tracke
 ## 🚀 Quick Start
 
 ### Use the Hosted Version
-1. Visit **[https://lennartP-sch.github.io/Mini-IphoneApp/](https://lennartP-sch.github.io/Mini-IphoneApp/)**
+1. Visit **[https://lennartP-sch.github.io/MoodTracker-PWA/](https://lennartP-sch.github.io/MoodTracker-PWA/)**
 2. On iPhone: Tap Share → "Add to Home Screen"
 3. Start tracking your mood!
 
 ### Self-Host
 ```bash
-git clone https://github.com/LennartP-sch/Mini-IphoneApp.git
-cd Mini-IphoneApp
+git clone https://github.com/LennartP-sch/MoodTracker-PWA.git
+cd MoodTracker-PWA
 # Serve with any static server
 npx serve .
 ```

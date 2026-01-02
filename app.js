@@ -676,7 +676,7 @@ class MoodTracker {
         // === FOOTER ===
         ctx.fillStyle = '#BBBBBB';
         ctx.font = '400 20px -apple-system, SF Pro Text, sans-serif';
-        ctx.fillText('lennartp-sch.github.io/Mini-IphoneApp', width / 2, height - 70);
+        ctx.fillText('lennartp-sch.github.io/MoodTracker-PWA', width / 2, height - 70);
 
         // Convert to blob and share
         canvas.toBlob(async (blob) => {
