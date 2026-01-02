@@ -104,9 +104,11 @@ class MoodTracker {
 
         // Today note auto-save
         this.elements.todayNote.addEventListener('input', () => this.saveTodayNote());
+        this.elements.todayNote.addEventListener('blur', () => this.saveTodayNote());
 
         // Modal note auto-save
         this.elements.modalNote.addEventListener('input', () => this.saveModalNote());
+        this.elements.modalNote.addEventListener('blur', () => this.saveModalNote());
 
         // View toggle
         this.elements.monthViewBtn.addEventListener('click', () => this.switchView('month'));
