@@ -73,7 +73,10 @@ class MoodTracker {
             prevMonth: document.getElementById('prevMonth'),
             nextMonth: document.getElementById('nextMonth'),
             weekdayHeaders: document.getElementById('weekdayHeaders'),
-            monthGrid: document.getElementById('monthGrid')
+            monthGrid: document.getElementById('monthGrid'),
+            // Share
+            shareBtn: document.getElementById('shareBtn'),
+            shareCanvas: document.getElementById('shareCanvas')
         };
     }
 
@@ -112,6 +115,9 @@ class MoodTracker {
         // Month navigation
         this.elements.prevMonth.addEventListener('click', () => this.changeMonth(-1));
         this.elements.nextMonth.addEventListener('click', () => this.changeMonth(1));
+
+        // Share button
+        this.elements.shareBtn.addEventListener('click', () => this.shareYear());
     }
 
     switchView(view) {
@@ -541,6 +547,181 @@ class MoodTracker {
         };
         reader.readAsText(file);
         event.target.value = '';
+    }
+
+    async shareYear() {
+        // Create canvas for beautiful share image
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Canvas size (Instagram story friendly: 1080x1920 or square 1080x1080)
+        const width = 1080;
+        const padding = 60;
+        const cellSize = 24;
+        const gap = 4;
+        const gridWidth = 12 * cellSize + 11 * gap;
+        const gridHeight = 31 * cellSize + 30 * gap;
+        const height = padding + 120 + gridHeight + 60 + 200 + padding; // title + grid + legend + stats
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Background gradient
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, '#0D0D0D');
+        gradient.addColorStop(1, '#1a1a2e');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+
+        // Add subtle pattern/texture
+        ctx.fillStyle = 'rgba(255,255,255,0.02)';
+        for (let i = 0; i < 50; i++) {
+            const x = Math.random() * width;
+            const y = Math.random() * height;
+            ctx.beginPath();
+            ctx.arc(x, y, Math.random() * 100 + 50, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Year title
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 72px Inter, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${this.currentYear}`, width / 2, padding + 70);
+
+        // Subtitle
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '24px Inter, -apple-system, sans-serif';
+        ctx.fillText('Mood Tracker', width / 2, padding + 105);
+
+        // Draw mood grid (centered)
+        const gridX = (width - gridWidth) / 2;
+        let gridY = padding + 140;
+
+        for (let day = 1; day <= 31; day++) {
+            for (let month = 0; month < 12; month++) {
+                const daysInMonth = this.getDaysInMonth(this.currentYear, month);
+                const x = gridX + month * (cellSize + gap);
+                const y = gridY + (day - 1) * (cellSize + gap);
+
+                if (day <= daysInMonth) {
+                    const key = this.getKey(this.currentYear, month, day);
+                    const mood = this.data[key];
+
+                    if (mood && MOODS[mood]) {
+                        ctx.fillStyle = MOODS[mood].color;
+                    } else {
+                        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+                    }
+                } else {
+                    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+                }
+
+                // Rounded rectangle
+                this.roundRect(ctx, x, y, cellSize, cellSize, 4);
+            }
+        }
+
+        // Legend (below grid)
+        let legendY = gridY + gridHeight + 50;
+        ctx.font = 'bold 20px Inter, -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.textAlign = 'center';
+        ctx.fillText('Legend', width / 2, legendY);
+
+        legendY += 30;
+        const legendItems = Object.entries(MOODS);
+        const legendWidth = legendItems.length * 80;
+        let legendX = (width - legendWidth) / 2;
+
+        legendItems.forEach(([grade, { color }]) => {
+            // Color box
+            ctx.fillStyle = color;
+            this.roundRect(ctx, legendX, legendY, 30, 30, 6);
+
+            // Grade label
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 14px Inter, -apple-system, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(grade, legendX + 15, legendY + 50);
+
+            legendX += 80;
+        });
+
+        // Stats (below legend)
+        let statsY = legendY + 80;
+        const counts = {};
+        let total = 0;
+        Object.keys(MOODS).forEach(mood => counts[mood] = 0);
+
+        for (let month = 0; month < 12; month++) {
+            const daysInMonth = this.getDaysInMonth(this.currentYear, month);
+            for (let day = 1; day <= daysInMonth; day++) {
+                const key = this.getKey(this.currentYear, month, day);
+                const mood = this.data[key];
+                if (mood && MOODS[mood]) {
+                    counts[mood]++;
+                    total++;
+                }
+            }
+        }
+
+        ctx.font = 'bold 20px Inter, -apple-system, sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${total} days tracked`, width / 2, statsY);
+
+        // Watermark
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.font = '16px Inter, -apple-system, sans-serif';
+        ctx.fillText('lennartp-sch.github.io/Mini-IphoneApp', width / 2, height - 30);
+
+        // Convert to blob and share
+        canvas.toBlob(async (blob) => {
+            const file = new File([blob], `mood-tracker-${this.currentYear}.png`, { type: 'image/png' });
+
+            if (navigator.share && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: `My ${this.currentYear} Mood Tracker`,
+                        text: `Check out my mood tracking for ${this.currentYear}! 📊`
+                    });
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        this.downloadImage(blob);
+                    }
+                }
+            } else {
+                this.downloadImage(blob);
+            }
+        }, 'image/png');
+    }
+
+    roundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    downloadImage(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mood-tracker-${this.currentYear}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 }
 

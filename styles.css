@@ -613,6 +613,55 @@ body {
     color: var(--text-primary);
 }
 
+/* Share Section */
+.share-section {
+    margin-bottom: 20px;
+}
+
+.share-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.share-btn:active {
+    transform: translateY(0);
+}
+
+/* Hidden Share Canvas */
+.share-canvas {
+    position: fixed;
+    left: -9999px;
+    top: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.share-canvas.generating {
+    visibility: visible;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
 /* Modal */
 .modal-overlay {
     position: fixed;
