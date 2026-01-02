@@ -292,6 +292,7 @@ class MoodTracker {
     changeYear(delta) {
         this.currentYear += delta;
         this.updateYearTitle();
+        this.renderMonthView();
         this.renderGrid();
         this.updateStats();
     }
