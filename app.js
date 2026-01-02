@@ -727,6 +727,134 @@ class MoodTracker {
     }
 }
 
+// ===== NOTIFICATION MANAGER =====
+const NotificationManager = {
+    ENABLED_KEY: 'moodReminderEnabled',
+    TIME_KEY: 'moodReminderTime',
+    timeoutId: null,
+
+    init() {
+        const toggle = document.getElementById('reminderToggle');
+        const timeInput = document.getElementById('reminderTime');
+        const timeRow = document.getElementById('reminderTimeRow');
+        if (!toggle || !timeInput || !timeRow) return;
+
+        // Load saved preferences
+        const enabled = localStorage.getItem(this.ENABLED_KEY) === 'true';
+        const savedTime = localStorage.getItem(this.TIME_KEY) || '20:00';
+
+        toggle.checked = enabled;
+        timeInput.value = savedTime;
+
+        // Show/hide time row based on toggle
+        if (enabled) {
+            timeRow.classList.add('visible');
+            this.scheduleReminder();
+        }
+
+        // Handle toggle change
+        toggle.addEventListener('change', async (e) => {
+            if (e.target.checked) {
+                const granted = await this.requestPermission();
+                if (granted) {
+                    localStorage.setItem(this.ENABLED_KEY, 'true');
+                    timeRow.classList.add('visible');
+                    this.scheduleReminder();
+                } else {
+                    e.target.checked = false;
+                    alert('Notifications blocked. Please enable them in your browser settings.');
+                }
+            } else {
+                localStorage.setItem(this.ENABLED_KEY, 'false');
+                timeRow.classList.remove('visible');
+                this.cancelReminder();
+            }
+        });
+
+        // Handle time change
+        timeInput.addEventListener('change', (e) => {
+            localStorage.setItem(this.TIME_KEY, e.target.value);
+            if (toggle.checked) {
+                this.scheduleReminder();
+            }
+        });
+    },
+
+    async requestPermission() {
+        if (!('Notification' in window)) {
+            alert('Your browser does not support notifications');
+            return false;
+        }
+
+        if (Notification.permission === 'granted') return true;
+        if (Notification.permission === 'denied') return false;
+
+        const permission = await Notification.requestPermission();
+        return permission === 'granted';
+    },
+
+    scheduleReminder() {
+        this.cancelReminder();
+
+        const savedTime = localStorage.getItem(this.TIME_KEY) || '20:00';
+        const [hours, minutes] = savedTime.split(':').map(Number);
+
+        const now = new Date();
+        const target = new Date();
+        target.setHours(hours, minutes, 0, 0);
+
+        // If already past target time, schedule for tomorrow
+        if (now >= target) {
+            target.setDate(target.getDate() + 1);
+        }
+
+        const delay = target.getTime() - now.getTime();
+
+        this.timeoutId = setTimeout(() => {
+            this.checkAndNotify();
+            this.scheduleReminder(); // Reschedule for next day
+        }, delay);
+
+        console.log(`Reminder scheduled for ${target.toLocaleString()}`);
+    },
+
+    cancelReminder() {
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+            this.timeoutId = null;
+        }
+    },
+
+    checkAndNotify() {
+        const today = new Date();
+        const key = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+        if (!data[key]) {
+            this.showNotification();
+        }
+    },
+
+    showNotification() {
+        if (Notification.permission === 'granted') {
+            const options = {
+                body: "Don't forget to log your mood for today! 📊",
+                icon: 'icons/icon-512.png',
+                tag: 'mood-reminder',
+                renotify: true,
+                requireInteraction: false
+            };
+
+            // Add vibration for Android
+            if ('vibrate' in navigator) {
+                options.vibrate = [200, 100, 200];
+            }
+
+            new Notification('Mood Tracker', options);
+        }
+    }
+};
+
 // Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -751,4 +879,5 @@ setInterval(updateTheme, 60000);
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     new MoodTracker();
+    NotificationManager.init();
 });
