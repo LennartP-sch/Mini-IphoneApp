@@ -198,6 +198,7 @@ class MoodTracker {
             delete this.notes[key];
         }
         this.saveNotes();
+        this.renderMonthView(); // Update gray dot indicator
     }
 
     saveModalNote() {
