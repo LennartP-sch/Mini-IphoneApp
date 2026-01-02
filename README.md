@@ -6,14 +6,15 @@ A beautiful, minimal mood tracking app inspired by [K Manuel's viral mood tracke
 
 ## ✨ Features
 
-- **📅 Yearly Grid View** - See your entire year at a glance
+- **📅 Month & Year Views** - Toggle between detailed monthly calendar and yearly overview
 - **🎨 6 Mood Levels** - From A+ (core memory) to F (very negative)
 - **📝 Daily Notes** - Add notes to remember what made each day special
+- **📤 Share Your Year** - Generate beautiful Instagram Story images (1080x1920)
 - **🌓 Auto Dark/Light Mode** - Switches based on time of day (7am-7pm)
 - **📱 PWA Support** - Install on your iPhone home screen
 - **💾 Offline First** - Works without internet
 - **🔒 Privacy** - All data stored locally on YOUR device only
-- **📤 Export/Import** - Backup your data as JSON
+- **� Export/Import** - Backup your data as JSON
 
 ## 🚀 Quick Start
 
