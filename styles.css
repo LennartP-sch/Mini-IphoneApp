@@ -937,6 +937,43 @@ body {
     transform: translateX(22px);
 }
 
+/* Ko-fi Support Button */
+.support-section {
+    margin-bottom: 20px;
+}
+
+.kofi-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #FF5E5B 0%, #FF385C 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(255, 94, 91, 0.3);
+}
+
+.kofi-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(255, 94, 91, 0.4);
+}
+
+.kofi-btn:active {
+    transform: translateY(0);
+}
+
+.kofi-btn svg {
+    flex-shrink: 0;
+}
+
 /* Responsive */
 @media (min-width: 768px) {
     .main {
