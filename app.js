@@ -701,7 +701,7 @@ class MoodTracker {
                     await navigator.share({
                         files: [file],
                         title: `My ${this.currentYear} Mood Tracker`,
-                        text: `Check out my mood tracking for ${this.currentYear}! 📊\n\nTry it yourself: https://lennartp-sch.github.io/MoodTracker-PWA/`
+                        text: `Check out my mood tracking for ${this.currentYear}! 📊\n\n📱 Try it yourself: https://lennartp-sch.github.io/MoodTracker-PWA/\n\n📲 Install as app:\n• iOS: Safari → Share → Add to Home Screen\n• Android: Chrome → Menu (⋮) → Install app`
                     });
                 } catch (err) {
                     if (err.name !== 'AbortError') {
