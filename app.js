@@ -633,32 +633,31 @@ class MoodTracker {
 
         // === HEADER ===
         ctx.fillStyle = '#1A1A1A';
-        ctx.font = '700 96px -apple-system, SF Pro Display, Helvetica Neue, sans-serif';
+        ctx.font = '700 144px -apple-system, SF Pro Display, Helvetica Neue, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
-        ctx.fillText(monthNames[this.currentMonth], width / 2, 180);
+        ctx.fillText(`${this.currentYear}`, width / 2, 200);
 
-        ctx.font = '700 144px -apple-system, SF Pro Display, Helvetica Neue, sans-serif';
-        ctx.fillText(`${this.currentYear}`, width / 2, 320);
-
+        // Month name as tagline
         ctx.fillStyle = '#999999';
-        ctx.font = '400 28px -apple-system, SF Pro Text, sans-serif';
-        ctx.fillText('My Month in Mood', width / 2, 380);
+        ctx.font = '400 48px -apple-system, SF Pro Text, sans-serif';
+        ctx.fillText(monthNames[this.currentMonth], width / 2, 270);
 
         // === MONTH GRID ===
-        const cellSize = 120;
-        const gap = 12;
-        const gridW = 7 * cellSize + 6 * gap;
+        const cellW = 130;
+        const cellH = 130;
+        const gap = 8;
+        const gridW = 7 * cellW + 6 * gap;
         const gridX = (width - gridW) / 2;
-        const gridY = 480;
+        const gridY = 400;
 
         // Weekday headers
-        const weekdays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-        ctx.fillStyle = '#888888';
-        ctx.font = '600 24px -apple-system, SF Pro Text, sans-serif';
+        const weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+        ctx.fillStyle = '#AAAAAA';
+        ctx.font = '600 28px -apple-system, SF Pro Text, sans-serif';
         weekdays.forEach((day, i) => {
-            const x = gridX + i * (cellSize + gap) + cellSize / 2;
-            ctx.fillText(day, x, gridY - 20);
+            const x = gridX + i * (cellW + gap) + cellW / 2;
+            ctx.fillText(day, x, gridY - 30);
         });
 
         // Days grid
@@ -668,10 +667,13 @@ class MoodTracker {
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < 7; col++) {
                 const cellIndex = row * 7 + col;
-                const x = gridX + col * (cellSize + gap);
-                const y = gridY + row * (cellSize + gap);
+                const x = gridX + col * (cellW + gap);
+                const y = gridY + row * (cellH + gap);
 
-                if (cellIndex >= firstDay && dayNum <= daysInMonth) {
+                if (cellIndex < firstDay) {
+                    ctx.fillStyle = '#F8F8F8';
+                    this.roundRect(ctx, x, y, cellW, cellH, 12);
+                } else if (dayNum <= daysInMonth) {
                     const key = this.getKey(this.currentYear, this.currentMonth, dayNum);
                     const mood = this.data[key];
 
@@ -681,14 +683,15 @@ class MoodTracker {
                         ctx.fillStyle = '#EEEEEE';
                     }
 
-                    this.roundRect(ctx, x, y, cellSize, cellSize, 16);
+                    this.roundRect(ctx, x, y, cellW, cellH, 12);
 
-                    // Day number
+                    // Day number - subtle
                     ctx.fillStyle = mood && MOODS[mood] ?
-                        (['C', 'B'].includes(mood) ? '#333' : '#FFF') : '#999';
-                    ctx.font = '600 36px -apple-system, SF Pro Display, sans-serif';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(dayNum.toString(), x + cellSize / 2, y + cellSize / 2);
+                        (['C', 'B'].includes(mood) ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.5)') : 'rgba(0,0,0,0.2)';
+                    ctx.font = '500 24px -apple-system, SF Pro Text, sans-serif';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(dayNum.toString(), x + 12, y + 10);
+                    ctx.textBaseline = 'alphabetic';
 
                     dayNum++;
                 }
@@ -696,7 +699,7 @@ class MoodTracker {
         }
 
         // === LEGEND ===
-        const legendY = gridY + rows * (cellSize + gap) + 80;
+        const legendY = gridY + rows * (cellH + gap) + 100;
         const legendItems = Object.entries(MOODS);
         const legendGap = 110;
         const legendTotalW = (legendItems.length - 1) * legendGap;
